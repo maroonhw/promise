@@ -1,75 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:leancloud_storage/leancloud.dart';
+import 'package:provider/provider.dart';
+import 'model/PRMGlobalConfigration.dart';
+import 'model/PRMThemeModel.dart';
+import 'model/PRMUserModel.dart';
+import 'package:promise/biz/home/PEMHomePage.dart';
+import 'package:promise/biz/login/PRMLoginPage.dart';
+import 'routes/PRMRoutes.dart';
 
 void main() {
-  runApp(MyApp());
+  LeanCloud.initialize(
+      'lsd35U0ivr7L0GdUSs9ePfA2-gzGzoHsz', 'ICbMovlvjMiyqWYPXIMnwk5q',
+      server: 'https://lsd35u0i.lc-cn-n1-shared.com',
+      queryCache: new LCQueryCache());
+
+  /// 开启调试日志
+  LCLogger.setLevel(LCLogger.DebugLevel);
+
+  runApp(PromiseApp());
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class PromiseApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-       
-        primarySwatch: Colors.blue,
-        
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: PRMThemeModel()),
+        ChangeNotifierProvider.value(value: PRMUserModel()),
+      ],
+      child: Consumer2<PRMThemeModel, PRMUserModel>(
+        builder: (BuildContext context, themeModel, userModel, Widget child) {
+          return MaterialApp(
+            theme: ThemeData(
+              primarySwatch:
+                  Provider.of<PRMThemeModel>(context).theme.themeColor,
+            ),
+            home: _switchRootWidget(userModel),
+            routes: PRMRoutes().routes,
+          );
+        },
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
-}
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-     
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    
-    return Scaffold(
-      appBar: AppBar(
-        
-        title: Text(widget.title),
-      ),
-      body: Center(
-        
-        child: Column(
-          
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+  Widget _switchRootWidget(PRMUserModel userModel) {
+    if (userModel.login) {
+      return PRMHomePage();
+    } else {
+      return PRMLoginPage();
+    }
   }
 }

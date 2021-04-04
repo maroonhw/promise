@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 
-
-
-class LoginPage extends StatefulWidget {
+class PRMLoginPage extends StatefulWidget {
   @override
-  _LoginPageRouteState createState() => new _LoginPageRouteState();
+  _PRMLoginPageRouteState createState() => new _PRMLoginPageRouteState();
 }
 
-class _LoginPageRouteState extends State<LoginPage>
+class _PRMLoginPageRouteState extends State<PRMLoginPage>
     with SingleTickerProviderStateMixin {
-       @override
+  @override
   void initState() {
     super.initState();
     // _requestVersionUpdate();
@@ -28,5 +26,4 @@ class _LoginPageRouteState extends State<LoginPage>
       backgroundColor: Colors.white,
     );
   }
-
 }
